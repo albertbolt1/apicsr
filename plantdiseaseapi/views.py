@@ -12,6 +12,17 @@ import os
 import numpy as np
 from PIL import Image
 from numpy import asarray
+import math
+import os
+from django.shortcuts import render,redirect
+ 
+# Function to find distance
+def distance(x1, y1, z1, x2, y2, z2):
+    d = math.sqrt(math.pow(x2 - x1, 2) +
+                math.pow(y2 - y1, 2) +
+                math.pow(z2 - z1, 2)* 1.0)
+    return d
+
 
 
 class MyImageView(APIView):
@@ -67,12 +78,36 @@ class MyImageView(APIView):
 										c[i]=c[i]/3
 										d[i]=d[i]/3
 
-									e=[b,c,d]
 
+									s832=distance(b[8], c[8],d[8],b[32], c[32],b[32]) 
+									s1331=distance(b[13], c[13],d[13],b[31], c[31],d[31])  
+									s2324=distance(b[23], c[23],d[23],b[24], c[24],d[24])  
+									s2632=distance(b[26], c[26],d[26],b[32], c[32],d[32])  
+									s2331=distance(b[23], c[23],d[23],b[31], c[31],d[31])  
+									s1317=distance(b[13], c[13],d[13],b[17], c[17],d[17])  
+									s1519=distance(b[15], c[15],d[15],b[19], c[19],d[19])  
+									s1315=0.85*distance(b[13], c[13],d[13],b[15], c[15],d[15])   
+									s113115=distance(b[11],c[11],d[11],b[31],c[31],d[31])  - distance(b[11],c[11],d[11],b[15],c[15],d[15]) 
+
+									e=[s832,s1331,s2324,s2632,s2331,s1317,s1519,s1315,s113115]
+
+
+									
 									return JsonResponse({"measures":e}, status=status.HTTP_201_CREATED)
+
 
 
 
 					
 				else:
 						return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+def del_images(request):
+	for file in os.listdir('./images'):
+		if (file.endswith('.png') or file.endswith('.jpeg')):
+			os.remove('./images/'+file)
+
+	return JsonResponse({"deleted":True})
+
